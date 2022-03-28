@@ -1,0 +1,23 @@
+{
+  "name": "sci-fi-books",
+  "version": "0.0.1",
+  "description": "A webpage which will show sci-fi books",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "npm run test",
+    "start": "node ./src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aburd/sci-fi-books.git"
+  },
+  "keywords": [
+    "sci-fi"
+  ],
+  "author": "Aaron Burdick <aaron.burdick@protonmail.com>",
+  "license": "AGPL-3",
+  "bugs": {
+    "url": "https://github.com/aburd/sci-fi-books/issues"
+  },
+  "homepage": "https://github.com/aburd/sci-fi-books#readme"
+}
