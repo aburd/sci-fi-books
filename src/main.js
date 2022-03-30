@@ -34,3 +34,30 @@ function main() {
 }
 
 main();
+
+/**
+ * A function that gets book information from API 
+ * 
+ */
+function regByISBN() {
+  let isbn;
+  const readline = require("readline");
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question("Enter book ISBN: ", function(isbn) {
+    console.log(`Registering ISBN: ${isbn}`);
+    console.log("Closing the interface");
+    rl.close();
+  });
+  const apiEndPoint = 'https://openlibrary.org/isbn/';
+  const apiSuffix = '.json';
+  // const sampleISBN = '9780316212366'
+  let apiLookUp = apiEndPoint + isbn + apiSuffix;
+  console.log(apiLookUp);
+}
+
+regByISBN();
