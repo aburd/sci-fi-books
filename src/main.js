@@ -36,7 +36,7 @@ function main() {
 main();
 
 /**
- * A function that gets book information from API 
+ * A function that gets book information from user inputted ISBN via API
  * 
  */
 function regByISBN() {
@@ -49,15 +49,21 @@ function regByISBN() {
   });
 
   rl.question("Enter book ISBN: ", function(isbn) {
-    console.log(`Registering ISBN: ${isbn}`);
+    console.log(`Registering ISBN: ${isbn}...`);
     console.log("Closing the interface");
     rl.close();
+    const apiEndPoint = 'https://openlibrary.org/isbn/';
+    const apiSuffix = '.json';
+    // const sampleISBN = '9780316212366'
+    let apiLookUp = apiEndPoint + isbn + apiSuffix;
+    console.log('The operation is complete, please visit this URL for the data:',)
+    console.log(apiLookUp); //api endpoint url properly interpolated with isbn for .json results
+    // fetch(apiEndPoint)
+    // .then(result => JSON.stringify(result))
+    // .then(jsonBookObject => {
+    // jsonBookData["title"]["author"]
+    // })
   });
-  const apiEndPoint = 'https://openlibrary.org/isbn/';
-  const apiSuffix = '.json';
-  // const sampleISBN = '9780316212366'
-  let apiLookUp = apiEndPoint + isbn + apiSuffix;
-  console.log(apiLookUp);
 }
 
 regByISBN();
