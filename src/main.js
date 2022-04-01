@@ -32,7 +32,7 @@ function displayBooks() {
  * 
  */
  function regByISBN() {
-  let isbn;
+
   const readline = require("readline");
 
   const rl = readline.createInterface({
@@ -61,17 +61,16 @@ function displayBooks() {
           const bookTitle = book.title;
           let authorURL = openLibraryURL + authorEndPointWithID + apiSuffix;
 
-          fetch(authorURL)
-            .then(res => res.json())
-            .then(author => {
-              const authorName = author.name;
+          return fetch(authorURL)
+          .then(res => res.json())
+          .then(author => {
+            const authorName = author.name;
 
-              console.log('\n');
-              console.log('Title:', bookTitle);
-              console.log('Author:', authorName);
-              console.log('***Your book has not been added to the database, but will in the future \n')
+            console.log('\n');
+            console.log('Title:', bookTitle);
+            console.log('Author:', authorName);
+            console.log('***Your book has not been added to the database, but will in the future \n')
               
-              runOptionsMenu();
             })  
         })
   });
@@ -83,7 +82,7 @@ function displayBooks() {
  * @param {string} value - e.g. 'Show a Book'
  * @returns {void}
  */
-function handleSelection({ id, value }) {
+ async function handleSelection({ id, value }) {
   console.log(`>> ${value}`);
   switch (id) {
     case 'show': {
@@ -95,7 +94,7 @@ function handleSelection({ id, value }) {
       break;
     }
     case 'add': {
-      regByISBN();
+      await regByISBN()
       break;
     }
     case 'quit': {
@@ -110,10 +109,7 @@ function handleSelection({ id, value }) {
 
   console.log('');
   // Run menu again, 'quit' is the only way to get out of loop
-
-  if (id != 'add') {
-    runOptionsMenu();
-  }
+  runOptionsMenu();
 }
 
 // TODO: handle errors more gracefully
