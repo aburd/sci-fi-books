@@ -2,6 +2,8 @@ const { getScifiBooks } = require('./db');
 // Dependency installed via `npm i cli-select`
 // https://www.npmjs.com/package/cli-select
 const cliSelect = require('cli-select');
+// Dependency installed via `npm i node-fetch`
+const fetch = require('node-fetch');
 
 const MENU_OPTIONS = {
   show: 'Show a book',
@@ -26,6 +28,56 @@ function displayBooks() {
 }
 
 /**
+ * A function that gets book information from user inputted ISBN via API
+ * 
+ */
+ function regByISBN() {
+  let isbn;
+  const readline = require("readline");
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question("Enter book ISBN: ", function(isbn) {
+    console.log('\n');
+    console.log(`Registering ISBN: ${isbn}...`);
+    rl.close();
+
+    const openLibraryURL = 'https://openlibrary.org';
+    const bookEndPoint = '/isbn/';
+    const apiSuffix = '.json';
+    // const sampleISBN = '9780316212366'
+
+    let bookURL = openLibraryURL + bookEndPoint + isbn + apiSuffix;
+    console.log(bookURL);
+    
+      fetch(bookURL)
+        .then(res => res.json()) // .then OR could be async+await
+        .then(book => {
+
+          const authorEndPointWithID = book.authors[0].key;
+          const bookTitle = book.title;
+          let authorURL = openLibraryURL + authorEndPointWithID + apiSuffix;
+
+          fetch(authorURL)
+            .then(res => res.json())
+            .then(author => {
+              const authorName = author.name;
+
+              console.log('\n');
+              console.log('Title:', bookTitle);
+              console.log('Author:', authorName);
+              console.log('***Your book has not been added to the database, but will in the future \n')
+              
+              runOptionsMenu();
+            })  
+        })
+  });
+}
+
+/**
  * Handles the selected CLI option
  * @param {string} id - 'show'|'delete'|'add'|'quit'
  * @param {string} value - e.g. 'Show a Book'
@@ -43,7 +95,7 @@ function handleSelection({ id, value }) {
       break;
     }
     case 'add': {
-      console.log('Not supported!');
+      regByISBN();
       break;
     }
     case 'quit': {
@@ -58,7 +110,10 @@ function handleSelection({ id, value }) {
 
   console.log('');
   // Run menu again, 'quit' is the only way to get out of loop
-  runOptionsMenu();
+
+  if (id != 'add') {
+    runOptionsMenu();
+  }
 }
 
 // TODO: handle errors more gracefully
@@ -79,36 +134,3 @@ function main() {
 }
 
 main();
-
-/**
- * A function that gets book information from user inputted ISBN via API
- * 
- */
-function regByISBN() {
-  let isbn;
-  const readline = require("readline");
-
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  rl.question("Enter book ISBN: ", function(isbn) {
-    console.log(`Registering ISBN: ${isbn}...`);
-    console.log("Closing the interface");
-    rl.close();
-    const apiEndPoint = 'https://openlibrary.org/isbn/';
-    const apiSuffix = '.json';
-    // const sampleISBN = '9780316212366'
-    let apiLookUp = apiEndPoint + isbn + apiSuffix;
-    console.log('The operation is complete, please visit this URL for the data:',)
-    console.log(apiLookUp); //api endpoint url properly interpolated with isbn for .json results
-    // fetch(apiEndPoint)
-    // .then(result => JSON.stringify(result))
-    // .then(jsonBookObject => {
-    // jsonBookData["title"]["author"]
-    // })
-  });
-}
-
-regByISBN();
