@@ -1,36 +1,81 @@
-// Load in the file-system module from the node standard-library
-// Whenever anybody talks about a "standard library", they're just talking'
-// about a library of code that the creators of the language give you
-// to make the code more useful
-// https://nodejs.org/dist/latest-v16.x/docs/api/fs.html
-const fs = require('fs');
+const { getScifiBooks } = require('./db');
+// Dependency installed via `npm i cli-select`
+// https://www.npmjs.com/package/cli-select
+const cliSelect = require('cli-select');
 
-/**
- * A function that gets our books, could connect to a DB in the future
- * For now, just reads a JSON file
- * @return {Book[]}
- */
-function getScifiBooks() {
-  const dbPath = `${__dirname}/fake-db.json`;
-  const books = fs.readFileSync(dbPath, { encoding: 'utf8' });
-  return JSON.parse(books);
-}
+const MENU_OPTIONS = {
+  show: 'Show a book',
+  add: 'Add a Book',
+  delete: 'Delete a Book',
+  quit: 'Quit',
+};
+const cliOptions = {
+  values: MENU_OPTIONS,
+};
 
 /**
  * Displays the books, for now we will just print the books
  * to the terminal
- * @param books {Book[]}
+ * @returns {void}
  */
-function displayBooks(books) {
+function displayBooks() {
+  const books = getScifiBooks();
   for (const book of books) {
     console.log(`- ${book.title}`);
   }
 }
 
+/**
+ * Handles the selected CLI option
+ * @param {string} id - 'show'|'delete'|'add'|'quit'
+ * @param {string} value - e.g. 'Show a Book'
+ * @returns {void}
+ */
+function handleSelection({ id, value }) {
+  console.log(`>> ${value}`);
+  switch (id) {
+    case 'show': {
+      displayBooks();
+      break;
+    }
+    case 'delete': {
+      console.log('Not supported!');
+      break;
+    }
+    case 'add': {
+      console.log('Not supported!');
+      break;
+    }
+    case 'quit': {
+      console.log('See ya around, space cowboy...');
+      // Exit node process with exit code 0 ('success');
+      // https://shapeshed.com/unix-exit-codes/
+      process.exit(0);
+    }
+    default:
+      console.log('Unrecognized option selected');
+  }
+
+  console.log('');
+  // Run menu again, 'quit' is the only way to get out of loop
+  runOptionsMenu();
+}
+
+// TODO: handle errors more gracefully
+function handleError(e) {
+  console.error(e);
+  console.log('Something bad happened.');
+}
+
+
+function runOptionsMenu() {
+  cliSelect(cliOptions)
+    .then(handleSelection)
+    .catch(handleError);
+}
+
 function main() {
-  console.log('Are you ready for some dang sci-fi books?');
-  const books = getScifiBooks();
-  displayBooks(books); 
+  runOptionsMenu();
 }
 
 main();

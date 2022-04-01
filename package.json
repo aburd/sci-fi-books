@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/aburd/sci-fi-books/issues"
   },
-  "homepage": "https://github.com/aburd/sci-fi-books#readme"
+  "homepage": "https://github.com/aburd/sci-fi-books#readme",
+  "dependencies": {
+    "cli-select": "^1.1.2"
+  }
 }
