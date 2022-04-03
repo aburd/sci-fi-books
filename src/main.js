@@ -26,7 +26,28 @@ function displayBooks() {
     console.log(`- ${book.title}`);
   }
 }
+async function printBookDetails(isbn) {
 
+  const openLibraryURL = 'https://openlibrary.org';
+  const bookEndPoint = '/isbn/';
+  const apiSuffix = '.json';
+  //const sampleISBN = '9780316212366'
+
+  const bookURL = openLibraryURL + bookEndPoint + isbn + apiSuffix;
+  const bookResponse = await fetch(bookURL);
+  const book = await bookResponse.json();
+  const bookTitle = book.title;
+
+  const authorEndPointWithID = book.authors[0].key;
+  const authorURL = openLibraryURL + authorEndPointWithID + apiSuffix;
+  const authorResponse = await fetch(authorURL);
+  const author = await authorResponse.json();
+  const authorName = author.name;
+  
+  console.log('\nTitle:', bookTitle);
+  console.log('Author:', authorName);
+  console.log('***Your book has not been added to the database, but will in the future \n')
+}
 /**
  * A function that gets book information from user inputted ISBN via API
  * 
@@ -41,38 +62,10 @@ function displayBooks() {
   });
 
   rl.question("Enter book ISBN: ", function(isbn) {
-    console.log('\n');
-    console.log(`Registering ISBN: ${isbn}...`);
+    console.log(`\nRegistering ISBN: ${isbn}...`);
     rl.close();
 
-    const openLibraryURL = 'https://openlibrary.org';
-    const bookEndPoint = '/isbn/';
-    const apiSuffix = '.json';
-    // const sampleISBN = '9780316212366'
-
-    let bookURL = openLibraryURL + bookEndPoint + isbn + apiSuffix;
-    console.log(bookURL);
-    
-      fetch(bookURL)
-        .then(res => res.json()) // .then OR could be async+await
-        .then(book => {
-
-          const authorEndPointWithID = book.authors[0].key;
-          const bookTitle = book.title;
-          let authorURL = openLibraryURL + authorEndPointWithID + apiSuffix;
-
-          return fetch(authorURL)
-          .then(res => res.json())
-          .then(author => {
-            const authorName = author.name;
-
-            console.log('\n');
-            console.log('Title:', bookTitle);
-            console.log('Author:', authorName);
-            console.log('***Your book has not been added to the database, but will in the future \n')
-              
-            })  
-        })
+    printBookDetails(isbn);
   });
 }
 
@@ -94,7 +87,7 @@ function displayBooks() {
       break;
     }
     case 'add': {
-      await regByISBN()
+      await regByISBN();
       break;
     }
     case 'quit': {
@@ -110,6 +103,7 @@ function displayBooks() {
   console.log('');
   // Run menu again, 'quit' is the only way to get out of loop
   runOptionsMenu();
+  
 }
 
 // TODO: handle errors more gracefully
