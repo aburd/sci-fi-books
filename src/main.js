@@ -20,8 +20,8 @@ const cliOptions = {
  * to the terminal
  * @returns {void}
  */
-function displayBooks() {
-  const books = getScifiBooks();
+async function displayBooks() {
+  const books = await getScifiBooks();
   for (const book of books) {
     console.log(`- ${book.title}`);
   }
@@ -88,7 +88,7 @@ async function regByISBN() {
   console.log(`>> ${value}`);
   switch (id) {
     case 'show': {
-      displayBooks();
+      await displayBooks();
       break;
     }
     case 'delete': {
