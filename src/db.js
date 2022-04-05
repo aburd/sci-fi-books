@@ -22,11 +22,9 @@ exports.getScifiBooks = async function () {
  * For now, just adds book to the JSON file
  * @return {Book[]}
  */
-exports.addScifiBook = function (book) {
-  const file = await fs.open(DB_PATH, "rw");
-  const fileContent = await file.readFile({ encoding: "utf8" });
+exports.addScifiBook = async function (book) {
+  const fileContent = await fs.readFile(DB_PATH, { encoding: "utf8" });
   const books = JSON.parse(fileContent);
   books.push(book);
-  await file.writeFile(JSON.stringify(books), { encoding: 'utf8' });
-  await file.close();
+  await fs.writeFile(DB_PATH, JSON.stringify(books), { encoding: 'utf8' });
 };
