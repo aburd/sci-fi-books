@@ -26,48 +26,57 @@ function displayBooks() {
     console.log(`- ${book.title}`);
   }
 }
-async function printBookDetails(isbn) {
 
-  const openLibraryURL = 'https://openlibrary.org';
-  const bookEndPoint = '/isbn/';
-  const apiSuffix = '.json';
-  //const sampleISBN = '9780316212366'
-
-  const bookURL = openLibraryURL + bookEndPoint + isbn + apiSuffix;
-  const bookResponse = await fetch(bookURL);
-  const book = await bookResponse.json();
-  const bookTitle = book.title;
-
-  const authorEndPointWithID = book.authors[0].key;
-  const authorURL = openLibraryURL + authorEndPointWithID + apiSuffix;
-  const authorResponse = await fetch(authorURL);
-  const author = await authorResponse.json();
-  const authorName = author.name;
-  
-  console.log('\nTitle:', bookTitle);
-  console.log('Author:', authorName);
-  console.log('***Your book has not been added to the database, but will in the future \n')
-}
 /**
- * A function that gets book information from user inputted ISBN via API
+ * A function that gets ISBN from user input
  * 
  */
- function regByISBN() {
-
+async function regByISBN() {
+  
   const readline = require("readline");
-
+  
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
-
-  rl.question("Enter book ISBN: ", function(isbn) {
-    console.log(`\nRegistering ISBN: ${isbn}...`);
+    
+    const isbn = await new Promise((isbn) => {
+      rl.question("Enter book ISBN: ", isbn);
+    });
     rl.close();
-
+    
     printBookDetails(isbn);
-  });
-}
+    
+  }
+  
+  /**
+   * A function that uses isbn to fetch and print book details
+   * 
+   */
+  async function printBookDetails(isbn) {
+  
+    console.log(`\nRegistering ISBN: ${isbn}`);
+  
+    const openLibraryURL = 'https://openlibrary.org';
+    const bookEndPoint = '/isbn/';
+    const apiSuffix = '.json';
+    //const sampleISBN = '9780316212366'
+  
+    const bookURL = openLibraryURL + bookEndPoint + isbn + apiSuffix;
+    const bookResponse = await fetch(bookURL);
+    const book = await bookResponse.json();
+    const bookTitle = book.title;
+  
+    const authorEndPointWithID = book.authors[0].key;
+    const authorURL = openLibraryURL + authorEndPointWithID + apiSuffix;
+    const authorResponse = await fetch(authorURL);
+    const author = await authorResponse.json();
+    const authorName = author.name;
+    
+    console.log('\nTitle:', bookTitle);
+    console.log('Author:', authorName);
+    console.log('***Your book has not been added to the database, but will in the future \n \n \n')
+  }
 
 /**
  * Handles the selected CLI option
