@@ -2,15 +2,53 @@
   {
     "title": "All Systems Red",
     "fullTitle": "All Systems Red The Murderbot Diaries",
-    "publishers": ["Tor.com"],
+    "publishers": [
+      "Tor.com"
+    ],
     "publishDate": "Jan 22, 2019",
-    "isbn13": ["9781250214713"],
-    "isbn10": ["1250214718"],
+    "isbn13": [
+      "9781250214713"
+    ],
+    "isbn10": [
+      "1250214718"
+    ],
     "author": {
       "name": "Martha Wells",
       "birthDate": "1 September 1964",
       "bio": "Martha Wells (born September 1, 1964) is an American writer of speculative fiction. She has published a number of fantasy novels, young adult novels, media tie-ins, short stories, and nonfiction essays on fantasy and science fiction subjects. Her novels have been translated into twelve languages. Wells has won a Nebula Award, two Locus Awards, and two Hugo Awards."
     }
+  },
+  {
+    "title": "Hydrogen Sonata",
+    "fullTitle": "Hydrogen Sonata",
+    "publishers": [
+      "Orbit"
+    ],
+    "publishDate": "2013",
+    "isbn13": [
+      "9780316212366"
+    ],
+    "author": {
+      "name": "Iain M. Banks",
+      "bio": ""
+    }
+  },
+  {
+    "title": "Non-stop",
+    "publishers": [
+      "Gollancz"
+    ],
+    "publishDate": "October 28, 2004",
+    "isbn13": [
+      "9781857989984"
+    ],
+    "isbn10": [
+      "1857989988"
+    ],
+    "author": {
+      "name": "Brian W. Aldiss",
+      "birthDate": "18 October 1925",
+      "bio": ""
+    }
   }
 ]
-

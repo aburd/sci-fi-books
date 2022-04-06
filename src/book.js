@@ -27,7 +27,7 @@
  * @returns {void}
  */
 exports.displayBook = function (book) {
-  console.log("Title:", book.title);
+  console.log("\nTitle:", book.title);
   console.log("Authors:", book.author.name);
 };
 
@@ -56,6 +56,6 @@ function openLibAuthorToAuthor(openLibAuthor) {
   return {
     name: openLibAuthor.name,
     birthDate: openLibAuthor.birth_date,
-    bio: openLibAuthor.bio.value,
+    bio: openLibAuthor.bio?.value || '',
   }
 }

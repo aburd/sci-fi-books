@@ -1,4 +1,4 @@
-const { getScifiBooks, getScifiBook } = require("./db");
+const { getScifiBooks, getScifiBook, addScifiBook } = require("./db");
 const cliSelect = require("cli-select");
 // Dependency installed via `npm i node-fetch`
 const fetch = require("node-fetch");
@@ -6,7 +6,7 @@ const readline = require("readline");
 const { displayBook, openLibraryToBook } = require("./book");
 
 const MENU_OPTIONS = {
-  show: "Show a book",
+  show: "Show books",
   add: "Add a Book",
   delete: "Delete a Book",
   quit: "Quit",
@@ -81,9 +81,10 @@ async function printBookDetails(isbn) {
 
   const book = openLibraryToBook(openLibBook, openLibAuthor);
   displayBook(book);
+  addScifiBook(book);
 
   console.log(
-    "***Your book has not been added to the database, but will in the future \n \n \n"
+    "Your book has been added to the database."
   );
 }
 
