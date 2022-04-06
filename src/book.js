@@ -35,7 +35,7 @@ exports.displayBook = function (book) {
  * Turns API responses into our Book type
  * @param {OpenLibraryBook} openLibBook
  * @param {OpenLibraryAuthor} openLibAuthor
- * @return {Boo}
+ * @return {Book}
  */
 exports.openLibraryToBook = function (openLibBook, openLibAuthor) {
   return {
