@@ -49,7 +49,7 @@ async function addScifiBook(book) {
   const fileContent = await fs.readFile(DB_PATH, { encoding: "utf8" });
   const books = JSON.parse(fileContent);
   books.push(book);
-  await fs.writeFile(DB_PATH, JSON.stringify(books), { encoding: 'utf8' });
+  await fs.writeFile(DB_PATH, JSON.stringify(books, null, 2), { encoding: 'utf8' });
 };
 
 module.exports = {

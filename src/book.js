@@ -17,6 +17,8 @@
  * @typedef Author
  * @type {object}
  * @property {string} name
+ * @property {string} birthDate
+ * @property {string} bio
  */
 
 /**
@@ -43,6 +45,17 @@ exports.openLibraryToBook = function (openLibBook, openLibAuthor) {
     publishDate: openLibBook.publish_date,
     isbn13: openLibBook.isbn_13,
     isbn10: openLibBook.isbn_10,
-    author: openLibAuthor,
+    author: openLibAuthorToAuthor(openLibAuthor),
   };
 };
+
+/**
+ * @return {Author} author
+ */
+function openLibAuthorToAuthor(openLibAuthor) {
+  return {
+    name: openLibAuthor.name,
+    birthDate: openLibAuthor.birth_date,
+    bio: openLibAuthor.bio.value,
+  }
+}
