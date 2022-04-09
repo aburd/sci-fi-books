@@ -67,13 +67,17 @@ async function handleShow() {
   }
 }
 
-
 /**
  * A function that gets ISBN from user input
  * @return {Promise<void>}
  */
 async function handleAdd() {
   const isbn = await askQuestion("Enter ISBN: ");
+  if (!isIsbnValid(isbn)) {
+    console.log(`ISBN ("${isbn}") is not valid.`);
+    return;
+  }
+
   const dbBook = await getScifiBook(isbn);
   if (dbBook) {
     console.log(emphasize("This book is already registered"));

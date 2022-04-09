@@ -82,5 +82,23 @@
       "birthDate": "8 October 1920",
       "bio": "Real name: Franklin Patrick Herbert Jr."
     }
+  },
+  {
+    "title": "Starship Troopers",
+    "publishers": [
+      "Ace Trade"
+    ],
+    "publishDate": "June 27, 2006",
+    "isbn13": [
+      "9780441014101"
+    ],
+    "isbn10": [
+      "0441014100"
+    ],
+    "author": {
+      "name": "Robert A. Heinlein",
+      "birthDate": "7 July 1907",
+      "bio": "Robert Anson Heinlein was an American science fiction writer. Often called \"the dean of science fiction writers\", he was one of the most popular, influential, and controversial authors of the genre. He set a high standard for science and engineering plausibility and helped to raise the genre's standards of literary quality. He was one of the first writers to break into mainstream, general magazines such as The Saturday Evening Post, in the late 1940s, with unvarnished science fiction. He was among the first authors of bestselling, novel-length science fiction in the modern, mass-market era. For many years, Heinlein, Isaac Asimov, and Arthur C. Clarke were known as the \"Big Three\" of science fiction. ([Source](http://en.wikipedia.org/wiki/Robert_A._Heinlein).)"
+    }
   }
 ]
