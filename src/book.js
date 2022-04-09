@@ -45,7 +45,7 @@ exports.openLibraryToBook = function (openLibBook, openLibAuthor) {
     publishDate: openLibBook.publish_date,
     isbn13: openLibBook.isbn_13,
     isbn10: openLibBook.isbn_10,
-    author: openLibAuthor ? openLibAuthorToAuthor(openLibAuthor) : null,
+    author: openLibAuthorToAuthor(openLibAuthor),
   };
 };
 
