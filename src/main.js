@@ -44,6 +44,7 @@ async function confirm(question) {
   if (res === 'n') {
     return false;
   }
+  console.log('Not a valid answer.');
   return confirm(question);
 }
 
@@ -92,7 +93,7 @@ async function handleAdd() {
   const isbn = await askQuestion("Enter ISBN: ");
   const dbBook = await getScifiBook(isbn);
   if (dbBook) {
-    console.log("This book is already registered");
+    console.log(emphasize("This book is already registered"));
     console.log(displayBook(dbBook));
     return;
   }
@@ -103,9 +104,9 @@ async function handleAdd() {
 
   if (await confirm('Add to DB?')) {
     addScifiBook(book);
-    console.log(`${book.title} has been added to the database.`);
+    console.log(`\n${book.title} has been added to the database.`);
   } else {
-    console.log(`${book.title} will not be added to the database.`)
+    console.log(`\n${book.title} will not be added to the database.`)
   }
 }
 

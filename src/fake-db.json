@@ -64,5 +64,23 @@
       "name": "Nancy N. Rue",
       "bio": ""
     }
+  },
+  {
+    "title": "Dune: Deluxe Edition",
+    "publishers": [
+      "Ace"
+    ],
+    "publishDate": "Oct 01, 2019",
+    "isbn13": [
+      "9780593099322"
+    ],
+    "isbn10": [
+      "059309932X"
+    ],
+    "author": {
+      "name": "Frank Herbert",
+      "birthDate": "8 October 1920",
+      "bio": "Real name: Franklin Patrick Herbert Jr."
+    }
   }
 ]
