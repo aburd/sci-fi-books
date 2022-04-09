@@ -1,9 +1,9 @@
 const { getScifiBooks, getScifiBook, addScifiBook } = require("./db");
 const cliSelect = require("cli-select");
 // Dependency installed via `npm i node-fetch`
-const fetch = require("node-fetch");
 const readline = require("readline");
 const { displayBook, openLibraryToBook } = require("./book");
+const openLibApi = require("./services/openLibrary");
 
 const MENU_OPTIONS = {
   show: "Show books",
@@ -66,19 +66,9 @@ async function printBookDetails(isbn) {
   //const sampleISBN = '9780316212366'
   console.log(`\nRegistering ISBN: ${isbn}`);
 
-  const openLibraryURL = "https://openlibrary.org";
-  const bookEndPoint = "/isbn/";
-  const apiSuffix = ".json";
-
-  const bookURL = openLibraryURL + bookEndPoint + isbn + apiSuffix;
-  const bookResponse = await fetch(bookURL);
-  const openLibBook = await bookResponse.json();
-
-  const authorEndPointWithID = openLibBook.authors[0].key;
-  const authorURL = openLibraryURL + authorEndPointWithID + apiSuffix;
-  const authorResponse = await fetch(authorURL);
-  const openLibAuthor = await authorResponse.json();
-
+  const openLibBook = await openLibApi.getBook(isbn)
+  const authorKey = openLibBook.authors[0].key;
+  const openLibAuthor = await openLibApi.getAuthor(authorKey);
   const book = openLibraryToBook(openLibBook, openLibAuthor);
   displayBook(book);
   addScifiBook(book);
