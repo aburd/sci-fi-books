@@ -1,8 +1,10 @@
-const { getScifiBooks, getScifiBook, addScifiBook } = require("./db");
+const { createSpinner } = require('nanospinner');
 const readline = require("readline");
+const { getScifiBooks, getScifiBook, addScifiBook } = require("./db");
 const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
 const { isIsbnValid, emphasize } = require('./util');
+
 
 /**
  * Ask user for something, and wait for the answer
@@ -43,9 +45,17 @@ async function confirm(question) {
  */
 async function fetchBook(isbn) {
   //const sampleISBN = '9780316212366'
-  console.log(`\nRegistering ISBN: ${isbn}`);
+  console.log();
 
+  const spinner = createSpinner(`Registering ISBN: ${isbn}`);
+  spinner.start();
   const openLibBook = await openLibApi.getBook(isbn);
+  if (openLibBook) {
+    spinner.success();
+  } else {
+    spinner.error();
+  }
+
   if (!openLibBook.authors) {
     console.log('No authors. Rejecting ISBN.');
     return null;
