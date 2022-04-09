@@ -1,6 +1,7 @@
+const cliSelect = require("cli-select");
 const { createSpinner } = require('nanospinner');
 const readline = require("readline");
-const { getScifiBooks, getScifiBook, addScifiBook } = require("./db");
+const { getScifiBooks, getScifiBook, addScifiBook, deleteScifiBook } = require("./db");
 const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
 const { isIsbnValid, emphasize } = require('./util');
@@ -111,8 +112,23 @@ async function handleAdd() {
   }
 }
 
-function handleDelete() {
-  console.log("Not supported!");
+async function handleDelete() {
+  const books = await getScifiBooks();
+  const menuOptions = books.reduce((acc, b) => {
+    acc[b.isbn13] = b.title;
+    return acc;
+  }, {});
+  const cliOptions = {
+    values: menuOptions,
+  };
+  const { value, id } = await cliSelect(cliOptions);
+
+  if (await confirm(`Are you sure you want to delete ${value}?`)) {
+    deleteScifiBook(id);
+    console.log(`${value} has been deleted.`);
+    return;
+  }
+  console.log(`Book will be kept in DB.`);
 }
 
 function handleQuit() {

@@ -23,7 +23,7 @@ async function handleUserMenuSelect(userSelection) {
       break;
     }
     case "delete": {
-      handlers.handleDelete();
+      await handlers.handleDelete();
       break;
     }
     case "add": {

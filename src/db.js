@@ -52,8 +52,21 @@ async function addScifiBook(book) {
   await fs.writeFile(DB_PATH, JSON.stringify(books, null, 2), { encoding: 'utf8' });
 };
 
+/**
+ * A function that deletes a book from our DB
+ * @param {string} isbn
+ * @return {void} 
+ */
+async function deleteScifiBook(isbn13) {
+  const fileContent = await fs.readFile(DB_PATH, { encoding: "utf8" });
+  let books = JSON.parse(fileContent);
+  books = books.filter(b => b.isbn13 != isbn13);
+  await fs.writeFile(DB_PATH, JSON.stringify(books, null, 2), { encoding: 'utf8' });
+};
+
 module.exports = {
   getScifiBooks,
   getScifiBook,
   addScifiBook,
+  deleteScifiBook,
 };
