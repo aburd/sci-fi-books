@@ -16,66 +16,108 @@ const cliOptions = {
 };
 
 /**
- * Displays the books, for now we will just print the books
- * to the terminal
- * @returns {void}
+ * Ask user for something, and wait for the answer
+ * @param {string} question
+ * @return {string} answer
  */
-async function displayBooks() {
-  const books = await getScifiBooks();
-  for (const book of books) {
-    displayBook(book);
-  }
-}
-
-/**
- * A function that gets ISBN from user input
- * @return {void}
- */
-async function regByISBN() {
-  const isbn = await askForIsbn();
-  const book = await getScifiBook(isbn);
-  if (book) {
-    console.log("This book is already registered");
-    displayBook(book);
-    return;
-  }
-  await printBookDetails(isbn);
-}
-
-/**
- * Ask user for the ISBN
- * @return {string} isbn
- */
-async function askForIsbn() {
+async function askQuestion(question) {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
-  const isbn = await new Promise((isbn) => {
-    rl.question("Enter book ISBN: ", isbn);
+  const answer = await new Promise((answer) => {
+    rl.question(question, answer);
   });
   rl.close();
-  return isbn;
+  return answer;
+}
+
+/**
+ * Confirm a question, recurse on invalid input
+ * @returns {boolean}
+ */
+async function confirm(question) {
+  const res = await askQuestion(`${question}\nAnswer y/n\n`);
+  if (res === 'y') {
+    return true;
+  }
+  if (res === 'n') {
+    return false;
+  }
+  return confirm(question);
 }
 
 /**
  * A function that uses isbn to fetch and print book details
  *
  */
-async function printBookDetails(isbn) {
+async function fetchBook(isbn) {
   //const sampleISBN = '9780316212366'
   console.log(`\nRegistering ISBN: ${isbn}`);
 
-  const openLibBook = await openLibApi.getBook(isbn)
+  const openLibBook = await openLibApi.getBook(isbn);
+  if (!openLibBook.authors) {
+    console.log('No authors. Rejecting ISBN.');
+    return null;
+  }
   const authorKey = openLibBook.authors[0].key;
   const openLibAuthor = await openLibApi.getAuthor(authorKey);
-  const book = openLibraryToBook(openLibBook, openLibAuthor);
-  displayBook(book);
-  addScifiBook(book);
+  return openLibraryToBook(openLibBook, openLibAuthor);
+}
 
-  console.log(
-    "Your book has been added to the database."
-  );
+/**
+ * Displays the books, for now we will just print the books
+ * to the terminal
+ * @returns {void}
+ */
+async function handleShow() {
+  const books = await getScifiBooks();
+  for (const book of books) {
+    console.log(displayBook(book));
+  }
+}
+
+function emphasize(s) {
+  const lines = s.split('\n').map(s => s.length);
+  const longestLen = Math.max(...lines);
+  const stars = "*".repeat(longestLen);
+  return `\n${stars}\n${s}\n${stars}\n`;
+}
+
+/**
+ * A function that gets ISBN from user input
+ * @return {Promise<void>}
+ */
+async function handleAdd() {
+  const isbn = await askQuestion("Enter ISBN: ");
+  const dbBook = await getScifiBook(isbn);
+  if (dbBook) {
+    console.log("This book is already registered");
+    console.log(displayBook(dbBook));
+    return;
+  }
+
+  const book = await fetchBook(isbn);
+  console.log('Book found!');
+  console.log(emphasize(displayBook(book)));
+
+  if (await confirm('Add to DB?')) {
+    addScifiBook(book);
+    console.log(`${book.title} has been added to the database.`);
+  } else {
+    console.log(`${book.title} will not be added to the database.`)
+  }
+}
+
+function handleDelete() {
+  console.log("Not supported!");
+}
+
+function handleQuit() {
+  console.log("See ya around, space cowboy...");
+  // Exit node process with exit code 0 ('success');
+  // https://shapeshed.com/unix-exit-codes/
+  process.exit(0);
 }
 
 /**
@@ -88,22 +130,19 @@ async function handleSelection({ id, value }) {
   console.log(`>> ${value}`);
   switch (id) {
     case "show": {
-      await displayBooks();
+      await handleShow();
       break;
     }
     case "delete": {
-      console.log("Not supported!");
+      handleDelete();
       break;
     }
     case "add": {
-      await regByISBN();
+      await handleAdd();
       break;
     }
     case "quit": {
-      console.log("See ya around, space cowboy...");
-      // Exit node process with exit code 0 ('success');
-      // https://shapeshed.com/unix-exit-codes/
-      process.exit(0);
+      handleQuit();
     }
     default:
       console.log("Unrecognized option selected");
