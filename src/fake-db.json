@@ -50,5 +50,19 @@
       "birthDate": "18 October 1925",
       "bio": ""
     }
+  },
+  {
+    "title": "Beauty of Believing",
+    "publishers": [
+      "HarperCollins Publishers"
+    ],
+    "publishDate": "2015",
+    "isbn13": [
+      "9780310736172"
+    ],
+    "author": {
+      "name": "Nancy N. Rue",
+      "bio": ""
+    }
   }
 ]

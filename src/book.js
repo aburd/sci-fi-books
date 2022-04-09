@@ -11,7 +11,7 @@
  * @property {string} publishDate
  * @property {string} isbn13
  * @property {string} isbn10
- * @property {Author} author
+ * @property {Author | null} author
  */
 /**
  * @typedef Author
@@ -27,8 +27,8 @@
  * @returns {void}
  */
 exports.displayBook = function (book) {
-  console.log("\nTitle:", book.title);
-  console.log("Authors:", book.author.name);
+  return `Title: ${book.title}
+Author: ${book.author.name}`;
 };
 
 /**
