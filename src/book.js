@@ -49,7 +49,7 @@ Bio: ${book.author.bio}`;
     return text;
   }
   return displayBook(book); 
-};
+}
 
 /**
  * Turns API responses into our Book type
@@ -67,7 +67,7 @@ function openLibraryToBook(openLibBook, openLibAuthor) {
     isbn10: openLibBook.isbn_10,
     author: openLibAuthorToAuthor(openLibAuthor),
   };
-};
+}
 
 /**
  * @return {Author} author
