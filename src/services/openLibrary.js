@@ -10,6 +10,12 @@ async function getBook(isbn) {
   return await bookResponse.json();
 }
 
+async function searchTitle(search) {
+  const url = `${openLibraryURL}/search.json?title=${encodeURI(search)}`;
+  const res = await fetch(url);
+  return await res.json();
+}
+
 async function searchAuthor(search) {
   const url = `${openLibraryURL}/search.json?author=${encodeURI(search)}`;
   const res = await fetch(url);
@@ -25,5 +31,6 @@ async function getAuthor(authorKey) {
 module.exports = {
   getBook,
   getAuthor,
+  searchTitle,
   searchAuthor,
 }

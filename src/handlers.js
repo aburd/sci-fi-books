@@ -109,6 +109,22 @@ async function displayDocSearch(docs) {
  * Search for an author by name and allow the user
  * to choose which of their books they'd like to download.
  */
+async function handleSearchByTitle() {
+  const titleSearch = await askQuestion('Enter the book\'s title: ');
+  const spinner = createSpinner(`Searching for "${titleSearch}"...`);
+  spinner.start();
+  const { numFound, docs } = await openLibApi.searchTitle(titleSearch).catch(() => spinner.error());
+  spinner.success();
+  console.log(`Found ${numFound} results!`);
+  if (docs.length) {
+     await displayDocSearch(docs);
+  }
+}
+
+/**
+ * Search for an author by name and allow the user
+ * to choose which of their books they'd like to download.
+ */
 async function handleSearchByAuthor() {
   const authorSearch = await askQuestion('Enter the author\'s name: ');
   const spinner = createSpinner(`Getting books by "${authorSearch}"`);
@@ -156,12 +172,16 @@ async function handleShow() {
  */
 async function handleSearch() {
   const searchOptions = {
+    title: "Search by book title",
     author: "Search by author",
   };
   const { id, value } = await cliSelect({ values: searchOptions });
   console.log(`>> ${value}`);
 
   switch(id) {
+    case "title":
+      await handleSearchByTitle();
+      break;
     case "author":
       await handleSearchByAuthor();
       break;
