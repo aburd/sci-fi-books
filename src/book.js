@@ -7,6 +7,7 @@
  * @type {object}
  * @property {string} title
  * @property {string} fullTitle
+ * @property {string} description
  * @property {string[]} publishers
  * @property {string} publishDate
  * @property {string} isbn13
@@ -57,6 +58,7 @@ exports.openLibraryToBook = function (openLibBook, openLibAuthor) {
   return {
     title: openLibBook.title,
     fullTitle: openLibBook.full_title,
+    description: openLibBook.description,
     publishers: openLibBook.publishers,
     publishDate: openLibBook.publish_date,
     isbn13: openLibBook.isbn_13,

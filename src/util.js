@@ -1,3 +1,5 @@
+const readline = require("readline");
+
 /**
  * Tells you if the string is a valid ISBN 10 or 13
  *
@@ -84,7 +86,42 @@ ${emptyLine}
 ${horizontalLine}`;
 }
 
+/**
+ * Ask user for something, and wait for the answer
+ * @param {string} question
+ * @return {string} answer
+ */
+async function askQuestion(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  const answer = await new Promise((answer) => {
+    rl.question(question, answer);
+  });
+  rl.close();
+  return answer;
+}
+
+/**
+ * Confirm a question, recurse on invalid input
+ * @returns {Promise<boolean>}
+ */
+async function confirm(question) {
+  const res = await askQuestion(`${question}\nAnswer y/n\n`);
+  if (res === 'y') {
+    return true;
+  }
+  if (res === 'n') {
+    return false;
+  }
+  console.log('Not a valid answer.');
+  return confirm(question);
+}
+
 module.exports = {
+  askQuestion,
+  confirm,
   isIsbnValid,
   emphasize,
   splitToLines,

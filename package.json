@@ -5,7 +5,9 @@
   "main": "src/main.js",
   "scripts": {
     "test": "npm run test",
-    "start": "node ./src/main.js"
+    "start": "node ./src/main.js",
+    "db:reset": "node ./scripts/reset.js",
+    "db:seed": "node ./scripts/seed.js"
   },
   "repository": {
     "type": "git",

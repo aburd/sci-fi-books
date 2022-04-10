@@ -1,44 +1,9 @@
 const cliSelect = require("cli-select");
 const { createSpinner } = require('nanospinner');
-const readline = require("readline");
 const { getScifiBooks, getScifiBook, addScifiBook, deleteScifiBook } = require("./db");
 const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
-const { isIsbnValid, emphasize, cardFromString } = require('./util');
-
-
-/**
- * Ask user for something, and wait for the answer
- * @param {string} question
- * @return {string} answer
- */
-async function askQuestion(question) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  const answer = await new Promise((answer) => {
-    rl.question(question, answer);
-  });
-  rl.close();
-  return answer;
-}
-
-/**
- * Confirm a question, recurse on invalid input
- * @returns {boolean}
- */
-async function confirm(question) {
-  const res = await askQuestion(`${question}\nAnswer y/n\n`);
-  if (res === 'y') {
-    return true;
-  }
-  if (res === 'n') {
-    return false;
-  }
-  console.log('Not a valid answer.');
-  return confirm(question);
-}
+const { isIsbnValid, emphasize, cardFromString, askQuestion, confirm } = require('./util');
 
 function menuOptionsFromBooks(books) {
   return books.reduce((acc, b) => {
@@ -57,20 +22,17 @@ async function fetchBook(isbn) {
 
   const spinner = createSpinner(`Registering ISBN: ${isbn}`);
   spinner.start();
-  const openLibBook = await openLibApi.getBook(isbn);
-  if (openLibBook) {
-    spinner.success();
-  } else {
-    spinner.error();
-  }
+  const openLibBook = await openLibApi.getBook(isbn).catch(() => spinner.error());
 
   if (!openLibBook.authors) {
     console.log('No authors. Rejecting ISBN.');
     return null;
   }
   const authorKey = openLibBook.authors[0].key;
-  const openLibAuthor = await openLibApi.getAuthor(authorKey);
-  return openLibraryToBook(openLibBook, openLibAuthor);
+  const openLibAuthor = await openLibApi.getAuthor(authorKey).catch(() => spinner.error());
+  const book =  openLibraryToBook(openLibBook, openLibAuthor);
+  spinner.success();
+  return book;
 }
 
 /**
@@ -80,6 +42,10 @@ async function fetchBook(isbn) {
  */
 async function handleShow() {
   const books = await getScifiBooks();
+  if (!books.length) {
+    console.log("No books in DB!");
+    return;
+  }
   const menuOptions = menuOptionsFromBooks(books);
   const { id, value } = await cliSelect({ values: menuOptions });
   const book = await getScifiBook(id);
@@ -146,6 +112,7 @@ function handleQuit() {
 }
 
 module.exports = {
+  fetchBook,
   handleShow,
   handleAdd,
   handleDelete,

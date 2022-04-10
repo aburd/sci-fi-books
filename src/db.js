@@ -64,7 +64,16 @@ async function deleteScifiBook(isbn13) {
   await fs.writeFile(DB_PATH, JSON.stringify(books, null, 2), { encoding: 'utf8' });
 };
 
+/**
+ * DANGEROUS: Empties all the data from the DB
+ */
+async function resetDb() {
+  await fs.writeFile(DB_PATH, "[]");
+}
+
 module.exports = {
+  DB_PATH,
+  resetDb,
   getScifiBooks,
   getScifiBook,
   addScifiBook,
