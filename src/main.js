@@ -3,6 +3,7 @@ const handlers = require("./handlers");
 
 const MENU_OPTIONS = {
   show: "Show books",
+  search: "Search for a book",
   add: "Add a Book",
   delete: "Delete a Book",
   quit: "Quit",
@@ -20,6 +21,10 @@ async function handleUserMenuSelect(userSelection) {
   switch (userSelection) {
     case "show": {
       await handlers.handleShow();
+      break;
+    }
+    case "search": {
+      await handlers.handleSearch();
       break;
     }
     case "delete": {

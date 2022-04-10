@@ -35,6 +35,24 @@ async function fetchBook(isbn) {
   return book;
 }
 
+async function handleSearchByAuthor() {
+  const authorSearch = await askQuestion('Enter the author\'s name: ');
+  const { numFound, docs } = await openLibApi.searchAuthor(authorSearch);
+  console.log(`Found ${numFound} results!`);
+  if (docs.length) {
+    console.log(`Would you like to add one of these books?`);
+    const docOptions = docs.reduce((acc, doc) => {
+      if (!doc.isbn) return acc;
+      acc[doc.isbn[0]] = `${doc.title}, by ${doc.author_name.join(', ')}`;
+      return acc;
+    }, {});
+    const { id: isbn, value: bookTitle } = await cliSelect({ values: docOptions });
+    console.log("Registering ", bookTitle);
+    const book = await fetchBook(isbn);
+    addScifiBook(book);
+  }
+}
+
 /**
  * Displays the books, for now we will just print the books
  * to the terminal
@@ -52,6 +70,22 @@ async function handleShow() {
   const halfTermWidth = Math.floor(process.stdout.columns * 0.45);
   const showText = cardFromString(displayBook(book, 'long'), halfTermWidth); 
   console.log(showText);
+}
+
+async function handleSearch() {
+  const searchOptions = {
+    author: "Search by author",
+  };
+  const { id, value } = await cliSelect({ values: searchOptions });
+  console.log(`>> ${value}`);
+
+  switch(id) {
+    case "author":
+      await handleSearchByAuthor();
+      break;
+    default:
+      console.log('Unrecognized search option!');
+  }
 }
 
 /**
@@ -114,6 +148,7 @@ function handleQuit() {
 module.exports = {
   fetchBook,
   handleShow,
+  handleSearch,
   handleAdd,
   handleDelete,
   handleQuit,
