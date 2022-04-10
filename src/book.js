@@ -29,21 +29,24 @@
  */
 function displayBook(book, style = 'normal') {
   if (style === 'short') {
-    return `${book.title}, by ${book.author.name}`
+    return `${book.title}, by ${book?.author.name}`
   }
   if (style === 'normal') {
     return `Title: ${book.title}
-Author: ${book.author.name}`;
+Author: ${book?.author.name}`;
   }
   if (style === 'long') {
-    return `${book.fullTitle || book.title}
+    let text = `${book.fullTitle || book.title}
 Publishers: ${book.publishers.join(', ')}
 Published Date: ${book.publishDate}
-
-Author --
+`;
+    if (book.author) {
+      text += `Author --
 Name: ${book.author.name}
 DOB: ${book.author.birthDate}
 Bio: ${book.author.bio}`;
+    }
+    return text;
   }
   return displayBook(book); 
 };

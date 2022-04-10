@@ -1,51 +1,30 @@
 [
   {
-    "title": "All Systems Red",
-    "fullTitle": "All Systems Red The Murderbot Diaries",
+    "title": "Very Far Away From Anywhere Else",
     "publishers": [
-      "Tor.com"
+      "Bantam Books"
     ],
-    "publishDate": "Jan 22, 2019",
+    "publishDate": "1981",
     "isbn13": [
-      "9781250214713"
+      "9780553200812"
     ],
     "isbn10": [
-      "1250214718"
+      "055320081X"
     ],
     "author": {
-      "name": "Martha Wells",
-      "birthDate": "1 September 1964",
-      "bio": "Martha Wells (born September 1, 1964) is an American writer of speculative fiction. She has published a number of fantasy novels, young adult novels, media tie-ins, short stories, and nonfiction essays on fantasy and science fiction subjects. Her novels have been translated into twelve languages. Wells has won a Nebula Award, two Locus Awards, and two Hugo Awards."
-    }
-  },
-  {
-    "title": "Hydrogen Sonata",
-    "fullTitle": "Hydrogen Sonata",
-    "publishers": [
-      "Orbit"
-    ],
-    "publishDate": "2013",
-    "isbn13": [
-      "9780316212366"
-    ],
-    "author": {
-      "name": "Iain M. Banks",
+      "name": "Ursula K. Le Guin",
+      "birthDate": "21 October 1929",
       "bio": ""
     }
   },
   {
-    "title": "L'exode",
-    "fullTitle": "L'exode",
+    "title": "The call of earth",
     "publishers": [
-      "J'AI LU",
-      "Editions 84"
+      "Legend (Arrow Bks.)"
     ],
-    "publishDate": "May 17, 2005",
-    "isbn13": [
-      "9782290330623"
-    ],
+    "publishDate": "1994",
     "isbn10": [
-      "2290330620"
+      "0099199416"
     ],
     "author": {
       "name": "Orson Scott Card",
@@ -54,16 +33,17 @@
     }
   },
   {
-    "title": "Le Cycle d'Ender, tome 3 ",
+    "title": "Seventh Son",
+    "fullTitle": "Seventh Son",
     "publishers": [
-      "J'ai lu"
+      "Legend"
     ],
-    "publishDate": "October 18, 2001",
+    "publishDate": "Aug 08, 1988",
     "isbn13": [
-      "9782290315521"
+      "9780712623209"
     ],
     "isbn10": [
-      "2290315524"
+      "0712623205"
     ],
     "author": {
       "name": "Orson Scott Card",

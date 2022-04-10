@@ -7,7 +7,7 @@ const { isIsbnValid, emphasize, cardFromString, askQuestion, confirm } = require
 
 function menuOptionsFromBooks(books) {
   return books.reduce((acc, b) => {
-    acc[b.isbn13] = displayBook(b, 'short');
+    acc[b.isbn13 || b.isbn10] = displayBook(b, 'short');
     return acc;
   }, {});
 }
@@ -117,6 +117,10 @@ async function handleShow() {
   const menuOptions = menuOptionsFromBooks(books);
   const { id, value } = await cliSelect({ values: menuOptions });
   const book = await getScifiBook(id);
+  if (!book) {
+    console.error(`${value} not found in DB!`);
+    return;
+  }
   const halfTermWidth = getHalfTermWidth();
   const showText = cardFromString(displayBook(book, 'long'), halfTermWidth); 
   console.log(showText);
