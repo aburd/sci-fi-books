@@ -27,11 +27,9 @@ function emphasize(s) {
 
 /**
  * Will split a string into a array of string, broken on newlines.
- * maxWidth, if positive will recursively split longer lines into lines
- * that are less than length of maxWidth
  *
  * @param {string} s
- * @param {number} maxWidth
+ * @param {number} maxWidth - if positive will recursively split longer lines into lines that are less than length of maxWidth
  * @return {string[]} lines
  */
 function splitToLines(s, maxWidth = 0) {
