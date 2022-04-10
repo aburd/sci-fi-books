@@ -2,8 +2,8 @@ const cliSelect = require("cli-select");
 const handlers = require("./handlers");
 
 const MENU_OPTIONS = {
-  show: "Show books",
   search: "Search for a book",
+  show: "Show books",
   add: "Add a Book",
   delete: "Delete a Book",
   quit: "Quit",
@@ -19,12 +19,12 @@ const cliOptions = {
  */
 async function handleUserMenuSelect(userSelection) {
   switch (userSelection) {
-    case "show": {
-      await handlers.handleShow();
-      break;
-    }
     case "search": {
       await handlers.handleSearch();
+      break;
+    }
+    case "show": {
+      await handlers.handleShow();
       break;
     }
     case "delete": {
