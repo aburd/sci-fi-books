@@ -1,4 +1,3 @@
-const fs = require('fs/promises');
 const { resetDb } = require('../src/db');
 const { confirm } = require('../src/util');
 

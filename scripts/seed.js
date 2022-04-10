@@ -1,4 +1,3 @@
-const { createSpinner } = require('nanospinner');
 const { addScifiBook } = require('../src/db');
 const { fetchBook } = require('../src/handlers');
 const { confirm } = require('../src/util');

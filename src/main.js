@@ -37,6 +37,7 @@ async function handleUserMenuSelect(userSelection) {
     }
     case "quit": {
       handlers.handleQuit();
+      break;
     }
     default:
       console.log("Unrecognized option selected");
