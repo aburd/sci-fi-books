@@ -72,7 +72,6 @@ async function resetDb() {
 }
 
 module.exports = {
-  DB_PATH,
   resetDb,
   getScifiBooks,
   getScifiBook,
