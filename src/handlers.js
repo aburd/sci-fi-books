@@ -4,7 +4,7 @@ const readline = require("readline");
 const { getScifiBooks, getScifiBook, addScifiBook, deleteScifiBook } = require("./db");
 const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
-const { isIsbnValid, emphasize } = require('./util');
+const { isIsbnValid, emphasize, cardFromString } = require('./util');
 
 
 /**
@@ -83,7 +83,9 @@ async function handleShow() {
   const menuOptions = menuOptionsFromBooks(books);
   const { id, value } = await cliSelect({ values: menuOptions });
   const book = await getScifiBook(id);
-  console.log(displayBook(book, 'long'));
+  const halfTermWidth = Math.floor(process.stdout.columns * 0.45);
+  const showText = cardFromString(displayBook(book, 'long'), halfTermWidth); 
+  console.log(showText);
 }
 
 /**
