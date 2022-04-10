@@ -5,6 +5,11 @@ const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
 const { isIsbnValid, emphasize, cardFromString, askQuestion, confirm } = require('./util');
 
+/**
+ * Take books and make menu options to display for CLI.
+ *
+ * @param {Book} books
+ */
 function menuOptionsFromBooks(books) {
   return books.reduce((acc, b) => {
     acc[b.isbn13 || b.isbn10] = displayBook(b, 'short');
@@ -15,6 +20,8 @@ function menuOptionsFromBooks(books) {
 /**
  * A function that uses isbn to fetch and print book details
  *
+ * @param {string} isbn
+ * @returns {Book} book
  */
 async function fetchBook(isbn) {
   const spinner = createSpinner(`Registering ISBN: ${isbn}`);
@@ -33,6 +40,14 @@ async function fetchBook(isbn) {
   return book;
 }
 
+/**
+ * Make CLI options which get used to display Doc search results.
+ *
+ * @param {ApiSearchDoc} docs
+ * @param {boolean} hasPrevious
+ * @param {boolean} hasNext
+ * @return {object}
+ */
 function makeDocOptions(docs, hasPrevious = false, hasNext = false) {
   const initOptions = {};
   const halfTermWidth = getHalfTermWidth();
@@ -55,6 +70,13 @@ function clearTerm() {
   process.stdout.write('\033c');
 }
 
+/**
+ * Displays the searched documents paginated.
+ *
+ * @param {ApiSearchDoc[]} docs - The docs returned from the OpenLibraryAPI
+ * @param {number} page - The current page
+ * @param {number} size - The amount of docs you want to display per page
+ */
 async function displaySearchPage(docs, page = 1, size = 10) {
   const start = (page - 1) * size;
   const end = page * size;
@@ -99,6 +121,9 @@ async function handleSearchByAuthor() {
   }
 }
 
+/**
+ * Get half the size of your terminals width so we can format text nicely.
+ */
 function getHalfTermWidth() {
   return Math.floor(process.stdout.columns * 0.45);
 }
@@ -126,6 +151,9 @@ async function handleShow() {
   console.log(showText);
 }
 
+/**
+ * Handle searching for a book, multiple methods for search.
+ */
 async function handleSearch() {
   const searchOptions = {
     author: "Search by author",
@@ -176,6 +204,9 @@ async function handleAdd() {
   }
 }
 
+/**
+ * Handle when the user chooses to delete a book.
+ */
 async function handleDelete() {
   const books = await getScifiBooks();
   const menuOptions = menuOptionsFromBooks(books);
@@ -192,6 +223,9 @@ async function handleDelete() {
   console.log(`Book will be kept in DB.`);
 }
 
+/**
+ * Handle when the user chooses to quit the program.
+ */
 function handleQuit() {
   console.log("See ya around, space cowboy...");
   // Exit node process with exit code 0 ('success');
