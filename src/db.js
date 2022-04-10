@@ -46,6 +46,7 @@ async function getScifiBook(isbn) {
  * @return {void} 
  */
 async function addScifiBook(book) {
+  if (!book) return;
   const fileContent = await fs.readFile(DB_PATH, { encoding: "utf8" });
   const books = JSON.parse(fileContent);
   books.push(book);
@@ -58,6 +59,7 @@ async function addScifiBook(book) {
  * @return {void} 
  */
 async function deleteScifiBook(isbn13) {
+  if (!isbn13) return;
   const fileContent = await fs.readFile(DB_PATH, { encoding: "utf8" });
   let books = JSON.parse(fileContent);
   books = books.filter(b => b.isbn13 != isbn13);

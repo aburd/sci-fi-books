@@ -36,7 +36,7 @@ function displayBook(book, style = 'normal') {
 Author: ${book.author.name}`;
   }
   if (style === 'long') {
-    return `${book.fullTitle}
+    return `${book.fullTitle || book.title}
 Publishers: ${book.publishers.join(', ')}
 Published Date: ${book.publishDate}
 
