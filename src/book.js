@@ -24,11 +24,27 @@
 /**
  * Displays a book to the terminal
  * @param {Book} book
+ * @param {'short'|'normal'|'long'} style
  * @returns {void}
  */
-exports.displayBook = function (book) {
-  return `Title: ${book.title}
+exports.displayBook = function (book, style = 'normal') {
+  if (style === 'simple') {
+    return `${book.title}, by ${book.author.name}`
+  }
+  if (style === 'normal') {
+    return `Title: ${book.title}
 Author: ${book.author.name}`;
+  }
+  if (style === 'long') {
+    return `${book.title}
+Publishers: ${book.publishers.join(', ')}
+Published Date: ${book.publishDate}
+
+Author --
+Name: ${book.author.name}
+DOB: ${book.author.birthDate}
+Bio: ${book.author.bio}`;
+  }
 };
 
 /**

@@ -40,6 +40,13 @@ async function confirm(question) {
   return confirm(question);
 }
 
+function menuOptionsFromBooks(books) {
+  return books.reduce((acc, b) => {
+    acc[b.isbn13] = b.title;
+    return acc;
+  }, {});
+}
+
 /**
  * A function that uses isbn to fetch and print book details
  *
@@ -73,9 +80,10 @@ async function fetchBook(isbn) {
  */
 async function handleShow() {
   const books = await getScifiBooks();
-  for (const book of books) {
-    console.log(displayBook(book));
-  }
+  const menuOptions = menuOptionsFromBooks(books);
+  const { id, value } = await cliSelect({ values: menuOptions });
+  const book = await getScifiBook(id);
+  console.log(displayBook(book, 'long'));
 }
 
 /**
@@ -114,10 +122,7 @@ async function handleAdd() {
 
 async function handleDelete() {
   const books = await getScifiBooks();
-  const menuOptions = books.reduce((acc, b) => {
-    acc[b.isbn13] = b.title;
-    return acc;
-  }, {});
+  const menuOptions = menuOptionsFromBooks(books);
   const cliOptions = {
     values: menuOptions,
   };
