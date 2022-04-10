@@ -7,7 +7,6 @@
  * @type {object}
  * @property {string} title
  * @property {string} fullTitle
- * @property {string} description
  * @property {string[]} publishers
  * @property {string} publishDate
  * @property {string} isbn13
@@ -28,8 +27,8 @@
  * @param {'short'|'normal'|'long'} style
  * @returns {void}
  */
-exports.displayBook = function (book, style = 'normal') {
-  if (style === 'simple') {
+function displayBook(book, style = 'normal') {
+  if (style === 'short') {
     return `${book.title}, by ${book.author.name}`
   }
   if (style === 'normal') {
@@ -37,7 +36,7 @@ exports.displayBook = function (book, style = 'normal') {
 Author: ${book.author.name}`;
   }
   if (style === 'long') {
-    return `${book.title}
+    return `${book.fullTitle}
 Publishers: ${book.publishers.join(', ')}
 Published Date: ${book.publishDate}
 
@@ -46,6 +45,7 @@ Name: ${book.author.name}
 DOB: ${book.author.birthDate}
 Bio: ${book.author.bio}`;
   }
+  return displayBook(book); 
 };
 
 /**
@@ -54,11 +54,10 @@ Bio: ${book.author.bio}`;
  * @param {OpenLibraryAuthor} openLibAuthor
  * @return {Book}
  */
-exports.openLibraryToBook = function (openLibBook, openLibAuthor) {
+function openLibraryToBook(openLibBook, openLibAuthor) {
   return {
     title: openLibBook.title,
     fullTitle: openLibBook.full_title,
-    description: openLibBook.description,
     publishers: openLibBook.publishers,
     publishDate: openLibBook.publish_date,
     isbn13: openLibBook.isbn_13,
@@ -76,4 +75,9 @@ function openLibAuthorToAuthor(openLibAuthor) {
     birthDate: openLibAuthor.birth_date,
     bio: openLibAuthor.bio?.value || '',
   }
+}
+
+module.exports = {
+  displayBook,
+  openLibraryToBook,
 }

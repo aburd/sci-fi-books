@@ -7,7 +7,7 @@ const { isIsbnValid, emphasize, cardFromString, askQuestion, confirm } = require
 
 function menuOptionsFromBooks(books) {
   return books.reduce((acc, b) => {
-    acc[b.isbn13] = b.title;
+    acc[b.isbn13] = displayBook(b, 'short');
     return acc;
   }, {});
 }
