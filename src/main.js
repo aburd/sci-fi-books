@@ -2,6 +2,7 @@ const cliSelect = require("cli-select");
 const handlers = require("./handlers");
 
 const MENU_OPTIONS = {
+  search: "Search for a book",
   show: "Show books",
   add: "Add a Book",
   delete: "Delete a Book",
@@ -18,6 +19,10 @@ const cliOptions = {
  */
 async function handleUserMenuSelect(userSelection) {
   switch (userSelection) {
+    case "search": {
+      await handlers.handleSearch();
+      break;
+    }
     case "show": {
       await handlers.handleShow();
       break;
@@ -32,6 +37,7 @@ async function handleUserMenuSelect(userSelection) {
     }
     case "quit": {
       handlers.handleQuit();
+      break;
     }
     default:
       console.log("Unrecognized option selected");

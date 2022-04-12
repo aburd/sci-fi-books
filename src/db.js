@@ -22,7 +22,7 @@ const DB_PATH = `${__dirname}/fake-db.json`;
 async function getScifiBooks() {
   const books = await fs.readFile(DB_PATH, { encoding: "utf8" });
   return JSON.parse(books);
-};
+}
 
 /**
  * Get book from db by some ISBN
@@ -37,7 +37,7 @@ async function getScifiBook(isbn) {
     }
   }
   return null;
-};
+}
 
 /**
  * A function that adds a book to our DB
@@ -46,11 +46,12 @@ async function getScifiBook(isbn) {
  * @return {void} 
  */
 async function addScifiBook(book) {
+  if (!book) return;
   const fileContent = await fs.readFile(DB_PATH, { encoding: "utf8" });
   const books = JSON.parse(fileContent);
   books.push(book);
   await fs.writeFile(DB_PATH, JSON.stringify(books, null, 2), { encoding: 'utf8' });
-};
+}
 
 /**
  * A function that deletes a book from our DB
@@ -58,13 +59,22 @@ async function addScifiBook(book) {
  * @return {void} 
  */
 async function deleteScifiBook(isbn13) {
+  if (!isbn13) return;
   const fileContent = await fs.readFile(DB_PATH, { encoding: "utf8" });
   let books = JSON.parse(fileContent);
   books = books.filter(b => b.isbn13 != isbn13);
   await fs.writeFile(DB_PATH, JSON.stringify(books, null, 2), { encoding: 'utf8' });
-};
+}
+
+/**
+ * DANGEROUS: Empties all the data from the DB
+ */
+async function resetDb() {
+  await fs.writeFile(DB_PATH, "[]");
+}
 
 module.exports = {
+  resetDb,
   getScifiBooks,
   getScifiBook,
   addScifiBook,

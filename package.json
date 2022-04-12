@@ -5,7 +5,10 @@
   "main": "src/main.js",
   "scripts": {
     "test": "npm run test",
-    "start": "node ./src/main.js"
+    "start": "node ./src/main.js",
+    "lint": "npx eslint --fix src/** scripts/**",
+    "db:reset": "node ./scripts/reset.js",
+    "db:seed": "node ./scripts/seed.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +27,8 @@
     "cli-select": "^1.1.2",
     "nanospinner": "^1.1.0",
     "node-fetch": "2.6.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.13.0"
   }
 }

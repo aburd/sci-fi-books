@@ -1,69 +1,147 @@
 const cliSelect = require("cli-select");
 const { createSpinner } = require('nanospinner');
-const readline = require("readline");
 const { getScifiBooks, getScifiBook, addScifiBook, deleteScifiBook } = require("./db");
 const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
-const { isIsbnValid, emphasize } = require('./util');
-
-
-/**
- * Ask user for something, and wait for the answer
- * @param {string} question
- * @return {string} answer
- */
-async function askQuestion(question) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  const answer = await new Promise((answer) => {
-    rl.question(question, answer);
-  });
-  rl.close();
-  return answer;
-}
+const { isIsbnValid, emphasize, cardFromString, askQuestion, confirm } = require('./util');
 
 /**
- * Confirm a question, recurse on invalid input
- * @returns {boolean}
+ * Take books and make menu options to display for CLI.
+ *
+ * @param {Book} books
  */
-async function confirm(question) {
-  const res = await askQuestion(`${question}\nAnswer y/n\n`);
-  if (res === 'y') {
-    return true;
-  }
-  if (res === 'n') {
-    return false;
-  }
-  console.log('Not a valid answer.');
-  return confirm(question);
+function menuOptionsFromBooks(books) {
+  return books.reduce((acc, b) => {
+    acc[b.isbn13 || b.isbn10] = displayBook(b, 'short');
+    return acc;
+  }, {});
 }
 
 /**
  * A function that uses isbn to fetch and print book details
  *
+ * @param {string} isbn
+ * @returns {Book} book
  */
 async function fetchBook(isbn) {
-  //const sampleISBN = '9780316212366'
-  console.log();
-
   const spinner = createSpinner(`Registering ISBN: ${isbn}`);
   spinner.start();
-  const openLibBook = await openLibApi.getBook(isbn);
-  if (openLibBook) {
-    spinner.success();
-  } else {
-    spinner.error();
-  }
+  const openLibBook = await openLibApi.getBook(isbn).catch(() => spinner.error());
 
   if (!openLibBook.authors) {
+    spinner.error();
     console.log('No authors. Rejecting ISBN.');
     return null;
   }
   const authorKey = openLibBook.authors[0].key;
-  const openLibAuthor = await openLibApi.getAuthor(authorKey);
-  return openLibraryToBook(openLibBook, openLibAuthor);
+  const openLibAuthor = await openLibApi.getAuthor(authorKey).catch(() => spinner.error());
+  const book = openLibraryToBook(openLibBook, openLibAuthor);
+  spinner.success();
+  return book;
+}
+
+/**
+ * Make CLI options which get used to display Doc search results.
+ *
+ * @param {ApiSearchDoc} docs
+ * @param {boolean} hasPrevious
+ * @param {boolean} hasNext
+ * @return {object}
+ */
+function makeDocOptions(docs, hasPrevious = false, hasNext = false) {
+  const initOptions = {};
+  const halfTermWidth = getHalfTermWidth();
+  const options = docs.reduce((acc, doc) => {
+    if (!doc.isbn) return acc;
+    const val = `${doc.title}, by ${doc.author_name.join(', ')}`;
+    acc[doc.isbn[0]] = val.substring(0, halfTermWidth);
+    return acc;
+  }, initOptions);
+  if (hasPrevious) {
+    initOptions.previous = 'Previous';
+  }
+  if (hasNext) {
+    options.next = 'Next';
+  }
+  return options;
+}
+
+function clearTerm() {
+  process.stdout.write('\033c');
+}
+
+/**
+ * Displays the searched documents paginated.
+ *
+ * @param {ApiSearchDoc[]} docs - The docs returned from the OpenLibraryAPI
+ * @param {number} page - The current page
+ * @param {number} size - The amount of docs you want to display per page
+ */
+async function displaySearchPage(docs, page = 1, size = 10) {
+  const start = (page - 1) * size;
+  const end = page * size;
+  const docOptions = makeDocOptions(docs.slice(start, end), Boolean(docs[start - 1]), Boolean(end));
+  const { id, value } = await cliSelect({ values: docOptions });
+  if (id === 'previous') {
+    clearTerm();
+    return await displaySearchPage(docs, page - 1, size);
+  }
+  if (id === 'next') {
+    clearTerm();
+    return await displaySearchPage(docs, page + 1, size);
+  }
+  return { isbn: id, title: value };
+}
+
+/**
+ * Display docs from openApi search functionality
+ * @param {SearchDoc[]} docs
+ */
+async function displayDocSearch(docs) {
+  console.log(`Would you like to add one of these books?`);
+  const { isbn, title } = await displaySearchPage(docs); 
+  console.log("Registering ", title);
+  const book = await fetchBook(isbn);
+  addScifiBook(book);
+}
+
+/**
+ * Search for an author by name and allow the user
+ * to choose which of their books they'd like to download.
+ */
+async function handleSearchByTitle() {
+  const titleSearch = await askQuestion('Enter the book\'s title: ');
+  const spinner = createSpinner(`Searching for "${titleSearch}"...`);
+  spinner.start();
+  const { numFound, docs } = await openLibApi.searchTitle(titleSearch).catch(() => spinner.error());
+  spinner.success();
+  console.log(`Found ${numFound} results!`);
+  if (docs.length) {
+     await displayDocSearch(docs);
+  }
+}
+
+/**
+ * Search for an author by name and allow the user
+ * to choose which of their books they'd like to download.
+ */
+async function handleSearchByAuthor() {
+  const authorSearch = await askQuestion('Enter the author\'s name: ');
+  const spinner = createSpinner(`Getting books by "${authorSearch}"`);
+  spinner.start();
+  const { numFound, docs } = await openLibApi.searchAuthor(authorSearch).catch(() => spinner.error());
+  spinner.success();
+  console.log(`Found ${numFound} results!`);
+  if (docs.length) {
+     await displayDocSearch(docs);
+  }
+}
+
+/**
+ * Get half the size of your terminals width so we can format text nicely.
+ */
+function getHalfTermWidth() {
+  return Math.floor(process.stdout.columns * 0.45);
 }
 
 /**
@@ -73,8 +151,42 @@ async function fetchBook(isbn) {
  */
 async function handleShow() {
   const books = await getScifiBooks();
-  for (const book of books) {
-    console.log(displayBook(book));
+  if (!books.length) {
+    console.log("No books in DB!");
+    return;
+  }
+  const menuOptions = menuOptionsFromBooks(books);
+  const { id, value } = await cliSelect({ values: menuOptions });
+  const book = await getScifiBook(id);
+  if (!book) {
+    console.error(`${value} not found in DB!`);
+    return;
+  }
+  const halfTermWidth = getHalfTermWidth();
+  const showText = cardFromString(displayBook(book, 'long'), halfTermWidth); 
+  console.log(showText);
+}
+
+/**
+ * Handle searching for a book, multiple methods for search.
+ */
+async function handleSearch() {
+  const searchOptions = {
+    title: "Search by book title",
+    author: "Search by author",
+  };
+  const { id, value } = await cliSelect({ values: searchOptions });
+  console.log(`>> ${value}`);
+
+  switch(id) {
+    case "title":
+      await handleSearchByTitle();
+      break;
+    case "author":
+      await handleSearchByAuthor();
+      break;
+    default:
+      console.log('Unrecognized search option!');
   }
 }
 
@@ -112,12 +224,12 @@ async function handleAdd() {
   }
 }
 
+/**
+ * Handle when the user chooses to delete a book.
+ */
 async function handleDelete() {
   const books = await getScifiBooks();
-  const menuOptions = books.reduce((acc, b) => {
-    acc[b.isbn13] = b.title;
-    return acc;
-  }, {});
+  const menuOptions = menuOptionsFromBooks(books);
   const cliOptions = {
     values: menuOptions,
   };
@@ -131,6 +243,9 @@ async function handleDelete() {
   console.log(`Book will be kept in DB.`);
 }
 
+/**
+ * Handle when the user chooses to quit the program.
+ */
 function handleQuit() {
   console.log("See ya around, space cowboy...");
   // Exit node process with exit code 0 ('success');
@@ -139,7 +254,9 @@ function handleQuit() {
 }
 
 module.exports = {
+  fetchBook,
   handleShow,
+  handleSearch,
   handleAdd,
   handleDelete,
   handleQuit,
