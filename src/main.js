@@ -1,4 +1,5 @@
 const cliSelect = require("cli-select");
+const db = require('./db');
 const handlers = require("./handlers");
 
 const MENU_OPTIONS = {
@@ -54,4 +55,14 @@ async function runOptionsMenu() {
   await handleUserMenuSelect(id);
 }
 
-runOptionsMenu();
+async function main() {
+  try {
+    await db.init();
+    await runOptionsMenu();
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
+}
+
+main();
