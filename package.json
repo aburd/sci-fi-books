@@ -25,10 +25,13 @@
   "homepage": "https://github.com/aburd/sci-fi-books#readme",
   "dependencies": {
     "cli-select": "^1.1.2",
+    "dotenv": "^16.0.0",
     "nanospinner": "^1.1.0",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "sqlite3": "^5.0.3"
   },
   "devDependencies": {
+    "@types/sqlite3": "^3.1.8",
     "eslint": "^8.13.0"
   }
 }
