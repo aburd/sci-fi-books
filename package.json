@@ -4,7 +4,7 @@
   "description": "A webpage which will show sci-fi books",
   "main": "src/main.js",
   "scripts": {
-    "test": "npm run test",
+    "test": "mocha",
     "start": "node ./src/main.js",
     "lint": "npx eslint --fix src/** scripts/**",
     "db:reset": "node ./scripts/reset.js",
@@ -31,7 +31,9 @@
     "sqlite3": "^5.0.3"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.1.2",
     "@types/sqlite3": "^3.1.8",
-    "eslint": "^8.13.0"
+    "eslint": "^8.13.0",
+    "mocha": "^9.2.2"
   }
 }
