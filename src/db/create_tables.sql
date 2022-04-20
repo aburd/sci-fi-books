@@ -1,16 +1,16 @@
 CREATE TABLE authors (
-  id int PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   name text NOT NULL,
   bio text DEFAULT ''
 );
 
 CREATE TABLE publishers (
-  id int PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   name text NOT NULL
 );
 
 CREATE TABLE books (
-  id int PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   title text NOT NULL,
   full_title text,
   publish_date text NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE books (
 );
 
 CREATE TABLE book_publishers ( 
-  id int PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   publisher_id REFERENCES publishers NOT NULL,
   book_id REFERENCES books NOT NULL
 );

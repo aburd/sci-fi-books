@@ -41,7 +41,14 @@ async function createDatabase(dbPath) {
   process.exit(0);
 }
 
+/**
+ * Initialize db and return the db object
+ * @param {string?} dbFilepath - the path to the db file, will be created if it
+ * doesnt exist
+ * @returns {SqliteDB}
+ */
 async function init(dbFilepath = `${__dirname}/scifibooks.db`) {
+  console.log("Connecting to DB...");
   const db = await new Promise((resolve, reject) => {
     const db = new sqlite3.Database(dbFilepath, sqlite3.OPEN_READWRITE, (err) => {
       if (err && err.code === 'SQLITE_CANTOPEN') {
@@ -49,14 +56,17 @@ async function init(dbFilepath = `${__dirname}/scifibooks.db`) {
         resolve(createDatabase(dbFilepath));
       } 
       console.log(`Opened DB at ${dbFilepath}`);
-      resolve(db);
     });
+    resolve(db);
   });
   
   const tableExists = await checkTableExists(db, 'book_publishers'); 
   if (!tableExists) {
+    console.log("Tables not found.");
+    console.log("Initializing DB...");
     await createTables(db);
   }
+  return db;
 }
 
 module.exports = {
