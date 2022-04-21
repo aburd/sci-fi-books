@@ -10,7 +10,6 @@
  * @property {string[]} publishers
  * @property {string} publishDate
  * @property {string} isbn13
- * @property {string} isbn10
  * @property {Author | null} author
  */
 /**
@@ -29,7 +28,7 @@
  */
 function displayBook(book, style = 'normal') {
   if (style === 'short') {
-    return `${book.title}, by ${book?.author.name}`
+    return `${book.title}, by ${book?.author?.name}`
   }
   if (style === 'normal') {
     return `Title: ${book.title}
