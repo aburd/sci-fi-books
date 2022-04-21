@@ -1,5 +1,5 @@
 const cliSelect = require("cli-select");
-const db = require('./db');
+const Db = require('./db');
 const handlers = require("./handlers");
 
 const MENU_OPTIONS = {
@@ -15,10 +15,11 @@ const cliOptions = {
 
 /**
  * Handles the selected CLI option
+ * @param {sqlite3DB} db
  * @param {string} userSelection - 'show'|'delete'|'add'|'quit'
  * @returns {void}
  */
-async function handleUserMenuSelect(userSelection) {
+async function handleUserMenuSelect(db, userSelection) {
   switch (userSelection) {
     case "search": {
       await handlers.handleSearch();
@@ -46,19 +47,23 @@ async function handleUserMenuSelect(userSelection) {
 
   console.log("");
   // Run menu again, 'quit' is the only way to get out of loop
-  runOptionsMenu();
+  runOptionsMenu(db);
 }
 
-async function runOptionsMenu() {
+/**
+ * Show the options in the CLI
+ * @param {sqlite3DB} db
+ */
+async function runOptionsMenu(db) {
   const { value, id } = await cliSelect(cliOptions);
   console.log(`>> ${value}`);
-  await handleUserMenuSelect(id);
+  await handleUserMenuSelect(db, id);
 }
 
 async function main() {
   try {
-    await db.init();
-    await runOptionsMenu();
+    const db = await Db.init();
+    await runOptionsMenu(db);
   } catch (e) {
     console.error(e);
     process.exit(1);

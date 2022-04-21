@@ -13,16 +13,17 @@ const promisify = require('util').promisify;
 // https://nodejs.org/dist/latest-v16.x/docs/api/fs.html
 const fs = require("fs/promises");
 
-const DB_PATH = `${__dirname}/fake-db.json`;
-
 /**
  * A function that gets our books, could connect to a DB in the future
  * For now, just reads a JSON file
  * @return {Book[]}
  */
 async function getScifiBooks() {
-  const books = await fs.readFile(DB_PATH, {encoding: "utf8"});
-  return JSON.parse(books);
+  const get = promisify(db.get.bind(db));
+  return await get(`
+    SELECT title, full_title as fullTitle, publish_date as publishDate, isbn13, isbn10 
+    FROM books
+  `, {$isbn10: isbn, $isbn13: isbn});
 }
 
 /**
