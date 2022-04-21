@@ -15,7 +15,7 @@ CREATE TABLE books (
   full_title text,
   publish_date text NOT NULL,
   isbn13 text NOT NULL,
-  isbn10 text NOT NULL,
+  isbn10 text,
   author_id REFERENCES authors
 );
 

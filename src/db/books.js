@@ -6,24 +6,17 @@ const promisify = require('util').promisify;
  * @typedef {import('./book').Book} Book
  */
 
-// Load in the file-system module from the node standard-library
-// Whenever anybody talks about a "standard library", they're just talking'
-// about a library of code that the creators of the language give you
-// to make the code more useful
-// https://nodejs.org/dist/latest-v16.x/docs/api/fs.html
-const fs = require("fs/promises");
-
 /**
- * A function that gets our books, could connect to a DB in the future
- * For now, just reads a JSON file
+ * Get our books from the DB
+ * @param {sqlite3DB} db
  * @return {Book[]}
  */
-async function getScifiBooks() {
-  const get = promisify(db.get.bind(db));
-  return await get(`
+async function getScifiBooks(db) {
+  const all = promisify(db.all.bind(db));
+  return await all(`
     SELECT title, full_title as fullTitle, publish_date as publishDate, isbn13, isbn10 
     FROM books
-  `, {$isbn10: isbn, $isbn13: isbn});
+  `);
 }
 
 /**
@@ -47,6 +40,7 @@ async function getScifiBook(db, isbn) {
 /**
  * A function that adds a book to our DB
  * For now, just adds book to the JSON file
+ * @param {sqlite3DB} db
  * @param {Book} book
  * @return {void} 
  */
@@ -57,10 +51,11 @@ async function addScifiBook(db, book) {
   let authorRow;
   if (book.author) {
     authorRow = await get(`
-      INSERT INTO (name, bio)
+      INSERT INTO authors 
+        (name, bio)
       VALUES ($name, $bio)
       RETURNING id
-    `, {name: book.author.name, bio: book.author.bio}, res);
+    `, { $name: book.author.name, $bio: book.author.bio});
   }
   const row = await get(`
     INSERT INTO books
@@ -80,8 +75,9 @@ async function addScifiBook(db, book) {
 
 /**
  * A function that deletes a book from our DB
+ * @param {sqlite3DB} db
  * @param {string} isbn
- * @return {void} 
+ * @return {Promise<void>} 
  */
 async function deleteScifiBook(db, isbn) {
   if (!isbn) return;
@@ -94,15 +90,7 @@ async function deleteScifiBook(db, isbn) {
   `, isbn, isbn);
 }
 
-/**
- * DANGEROUS: Empties all the data from the DB
- */
-async function resetDb() {
-  await fs.writeFile(DB_PATH, "[]");
-}
-
 module.exports = {
-  resetDb,
   getScifiBooks,
   getScifiBook,
   addScifiBook,

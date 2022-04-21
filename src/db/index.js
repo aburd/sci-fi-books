@@ -1,17 +1,18 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const promisify = require('util').promisify;
 const path = require('path');
 const { askQuestion } = require('../util');
 
+async function runSqlFile(db, filePath) {
+  const exec = promisify(db.exec.bind(db));
+  const sql = fs.readFileSync(filePath, { encoding: 'utf8' });
+  await exec(sql);
+}
+
 async function createTables(db) {
   const createTablesPath = path.join(__dirname, 'create_tables.sql'); 
-  const createTablesSql = fs.readFileSync(createTablesPath, { encoding: 'utf8' });
-  return new Promise((res, rej) => {
-    db.exec(createTablesSql, (err) => {
-      if (err) rej(err);
-      res();
-    });
-  });
+  await runSqlFile(db, createTablesPath);
 }
 
 function checkTableExists(db, tableName) {
@@ -69,6 +70,16 @@ async function init(dbFilepath = `${__dirname}/scifibooks.db`) {
   return db;
 }
 
+/**
+ * DANGEROUS: Empties all the data from the DB
+ */
+async function resetDb(db) {
+  const dropTablesPath = path.join(__dirname, 'drop_tables.sql'); 
+  await runSqlFile(db, dropTablesPath);
+  await createTables(db); 
+}
+
 module.exports = {
   init,
+  resetDb,
 }

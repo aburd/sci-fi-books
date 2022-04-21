@@ -1,6 +1,6 @@
 const cliSelect = require("cli-select");
 const { createSpinner } = require('nanospinner');
-const { getScifiBooks, getScifiBook, addScifiBook, deleteScifiBook } = require("./db");
+const { getScifiBooks, getScifiBook, addScifiBook, deleteScifiBook } = require("./db/books");
 const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
 const { isIsbnValid, emphasize, cardFromString, askQuestion, confirm } = require('./util');
@@ -95,21 +95,23 @@ async function displaySearchPage(docs, page = 1, size = 10) {
 
 /**
  * Display docs from openApi search functionality
+ * @param {sqlite3DB} db
  * @param {SearchDoc[]} docs
  */
-async function displayDocSearch(docs) {
+async function displayDocSearch(db, docs) {
   console.log(`Would you like to add one of these books?`);
   const { isbn, title } = await displaySearchPage(docs); 
   console.log("Registering ", title);
   const book = await fetchBook(isbn);
-  addScifiBook(book);
+  await addScifiBook(db, book);
 }
 
 /**
  * Search for an author by name and allow the user
  * to choose which of their books they'd like to download.
+ * @param {sqlite3DB} db
  */
-async function handleSearchByTitle() {
+async function handleSearchByTitle(db) {
   const titleSearch = await askQuestion('Enter the book\'s title: ');
   const spinner = createSpinner(`Searching for "${titleSearch}"...`);
   spinner.start();
@@ -117,15 +119,16 @@ async function handleSearchByTitle() {
   spinner.success();
   console.log(`Found ${numFound} results!`);
   if (docs.length) {
-     await displayDocSearch(docs);
+     await displayDocSearch(db, docs);
   }
 }
 
 /**
  * Search for an author by name and allow the user
  * to choose which of their books they'd like to download.
+ * @param {sqlite3DB} db
  */
-async function handleSearchByAuthor() {
+async function handleSearchByAuthor(db) {
   const authorSearch = await askQuestion('Enter the author\'s name: ');
   const spinner = createSpinner(`Getting books by "${authorSearch}"`);
   spinner.start();
@@ -133,7 +136,7 @@ async function handleSearchByAuthor() {
   spinner.success();
   console.log(`Found ${numFound} results!`);
   if (docs.length) {
-     await displayDocSearch(docs);
+     await displayDocSearch(db, docs);
   }
 }
 
@@ -147,17 +150,18 @@ function getHalfTermWidth() {
 /**
  * Displays the books, for now we will just print the books
  * to the terminal
+ * @param {sqlite3DB} db
  * @returns {void}
  */
-async function handleShow() {
-  const books = await getScifiBooks();
+async function handleShow(db) {
+  const books = await getScifiBooks(db);
   if (!books.length) {
     console.log("No books in DB!");
     return;
   }
   const menuOptions = menuOptionsFromBooks(books);
   const { id, value } = await cliSelect({ values: menuOptions });
-  const book = await getScifiBook(id);
+  const book = await getScifiBook(db, id);
   if (!book) {
     console.error(`${value} not found in DB!`);
     return;
@@ -169,8 +173,9 @@ async function handleShow() {
 
 /**
  * Handle searching for a book, multiple methods for search.
+ * @param {sqlite3DB} db
  */
-async function handleSearch() {
+async function handleSearch(db) {
   const searchOptions = {
     title: "Search by book title",
     author: "Search by author",
@@ -180,10 +185,10 @@ async function handleSearch() {
 
   switch(id) {
     case "title":
-      await handleSearchByTitle();
+      await handleSearchByTitle(db);
       break;
     case "author":
-      await handleSearchByAuthor();
+      await handleSearchByAuthor(db);
       break;
     default:
       console.log('Unrecognized search option!');
@@ -192,16 +197,17 @@ async function handleSearch() {
 
 /**
  * A function that gets ISBN from user input
+ * @param {sqlite3DB} db
  * @return {Promise<void>}
  */
-async function handleAdd() {
+async function handleAdd(db) {
   const isbn = await askQuestion("Enter ISBN: ");
   if (!isIsbnValid(isbn)) {
     console.log(`ISBN ("${isbn}") is not valid.`);
     return;
   }
 
-  const dbBook = await getScifiBook(isbn);
+  const dbBook = await getScifiBook(db, isbn);
   if (dbBook) {
     console.log(emphasize("This book is already registered"));
     console.log(displayBook(dbBook));
@@ -217,7 +223,7 @@ async function handleAdd() {
   console.log(emphasize(displayBook(book)));
 
   if (await confirm('Add to DB?')) {
-    addScifiBook(book);
+    await addScifiBook(db, book);
     console.log(`\n${book.title} has been added to the database.`);
   } else {
     console.log(`\n${book.title} will not be added to the database.`)
@@ -226,9 +232,10 @@ async function handleAdd() {
 
 /**
  * Handle when the user chooses to delete a book.
+ * @param {sqlite3DB} db
  */
-async function handleDelete() {
-  const books = await getScifiBooks();
+async function handleDelete(db) {
+  const books = await getScifiBooks(db);
   const menuOptions = menuOptionsFromBooks(books);
   const cliOptions = {
     values: menuOptions,
@@ -236,7 +243,7 @@ async function handleDelete() {
   const { value, id } = await cliSelect(cliOptions);
 
   if (await confirm(`Are you sure you want to delete ${value}?`)) {
-    deleteScifiBook(id);
+    await deleteScifiBook(db, id);
     console.log(`${value} has been deleted.`);
     return;
   }

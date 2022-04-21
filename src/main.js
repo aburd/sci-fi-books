@@ -22,19 +22,19 @@ const cliOptions = {
 async function handleUserMenuSelect(db, userSelection) {
   switch (userSelection) {
     case "search": {
-      await handlers.handleSearch();
+      await handlers.handleSearch(db);
       break;
     }
     case "show": {
-      await handlers.handleShow();
+      await handlers.handleShow(db);
       break;
     }
     case "delete": {
-      await handlers.handleDelete();
+      await handlers.handleDelete(db);
       break;
     }
     case "add": {
-      await handlers.handleAdd();
+      await handlers.handleAdd(db);
       break;
     }
     case "quit": {
