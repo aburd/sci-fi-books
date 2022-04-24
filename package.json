@@ -25,6 +25,7 @@
   "homepage": "https://github.com/aburd/sci-fi-books#readme",
   "dependencies": {
     "cli-select": "^1.1.2",
+    "lmdb": "^2.3.6",
     "nanospinner": "^1.1.0",
     "node-fetch": "2.6.7"
   },

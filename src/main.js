@@ -1,4 +1,7 @@
+const path = require('path');
 const cliSelect = require("cli-select");
+const { open } = require('lmdb');
+const { initBooksDb } = require('../src/db/books');
 const handlers = require("./handlers");
 
 const MENU_OPTIONS = {
@@ -17,22 +20,22 @@ const cliOptions = {
  * @param {string} userSelection - 'show'|'delete'|'add'|'quit'
  * @returns {void}
  */
-async function handleUserMenuSelect(userSelection) {
+async function handleUserMenuSelect(userSelection, booksDb) {
   switch (userSelection) {
     case "search": {
-      await handlers.handleSearch();
+      await handlers.handleSearch(booksDb);
       break;
     }
     case "show": {
-      await handlers.handleShow();
+      await handlers.handleShow(booksDb);
       break;
     }
     case "delete": {
-      await handlers.handleDelete();
+      await handlers.handleDelete(booksDb);
       break;
     }
     case "add": {
-      await handlers.handleAdd();
+      await handlers.handleAdd(booksDb);
       break;
     }
     case "quit": {
@@ -45,13 +48,24 @@ async function handleUserMenuSelect(userSelection) {
 
   console.log("");
   // Run menu again, 'quit' is the only way to get out of loop
-  runOptionsMenu();
+  runOptionsMenu(booksDb);
 }
 
-async function runOptionsMenu() {
+async function runOptionsMenu(booksDb) {
   const { value, id } = await cliSelect(cliOptions);
   console.log(`>> ${value}`);
-  await handleUserMenuSelect(id);
+  await handleUserMenuSelect(id, booksDb);
 }
 
-runOptionsMenu();
+function main() {
+  const dbPath = path.join(__dirname, '..', 'scifibooks');
+  const db = open({
+    path: dbPath,
+    // any options go here, we can turn on compression like this:
+    compression: true,
+  });
+  const booksDb = initBooksDb(db);
+  runOptionsMenu(booksDb);
+}
+
+main();

@@ -1,6 +1,6 @@
 const cliSelect = require("cli-select");
 const { createSpinner } = require('nanospinner');
-const { getScifiBooks, getScifiBook, addScifiBook, deleteScifiBook } = require("./db");
+const { initBooksDb } = require("./db/books");
 const { displayBook, openLibraryToBook } = require("./book");
 const openLibApi = require("./services/openLibrary");
 const { isIsbnValid, emphasize, cardFromString, askQuestion, confirm } = require('./util');
@@ -96,13 +96,14 @@ async function displaySearchPage(docs, page = 1, size = 10) {
 /**
  * Display docs from openApi search functionality
  * @param {SearchDoc[]} docs
+ * @returns {Book}
  */
 async function displayDocSearch(docs) {
   console.log(`Would you like to add one of these books?`);
   const { isbn, title } = await displaySearchPage(docs); 
   console.log("Registering ", title);
   const book = await fetchBook(isbn);
-  addScifiBook(book);
+  return book;
 }
 
 /**
@@ -117,7 +118,7 @@ async function handleSearchByTitle() {
   spinner.success();
   console.log(`Found ${numFound} results!`);
   if (docs.length) {
-     await displayDocSearch(docs);
+     return await displayDocSearch(docs);
   }
 }
 
@@ -133,7 +134,7 @@ async function handleSearchByAuthor() {
   spinner.success();
   console.log(`Found ${numFound} results!`);
   if (docs.length) {
-     await displayDocSearch(docs);
+     return await displayDocSearch(docs);
   }
 }
 
@@ -149,15 +150,15 @@ function getHalfTermWidth() {
  * to the terminal
  * @returns {void}
  */
-async function handleShow() {
-  const books = await getScifiBooks();
+async function handleShow(booksDb) {
+  const books = booksDb.getScifiBooks();
   if (!books.length) {
     console.log("No books in DB!");
     return;
   }
   const menuOptions = menuOptionsFromBooks(books);
   const { id, value } = await cliSelect({ values: menuOptions });
-  const book = await getScifiBook(id);
+  const book = getScifiBook(id);
   if (!book) {
     console.error(`${value} not found in DB!`);
     return;
@@ -178,6 +179,7 @@ async function handleSearch() {
   const { id, value } = await cliSelect({ values: searchOptions });
   console.log(`>> ${value}`);
 
+  let result;
   switch(id) {
     case "title":
       await handleSearchByTitle();
@@ -188,20 +190,23 @@ async function handleSearch() {
     default:
       console.log('Unrecognized search option!');
   }
+  if (result) {
+    await booksDb.addScifiBook(result);
+  }
 }
 
 /**
  * A function that gets ISBN from user input
  * @return {Promise<void>}
  */
-async function handleAdd() {
+async function handleAdd(bookDb) {
   const isbn = await askQuestion("Enter ISBN: ");
   if (!isIsbnValid(isbn)) {
     console.log(`ISBN ("${isbn}") is not valid.`);
     return;
   }
 
-  const dbBook = await getScifiBook(isbn);
+  const dbBook = booksDb.getScifiBook(isbn);
   if (dbBook) {
     console.log(emphasize("This book is already registered"));
     console.log(displayBook(dbBook));
@@ -217,7 +222,7 @@ async function handleAdd() {
   console.log(emphasize(displayBook(book)));
 
   if (await confirm('Add to DB?')) {
-    addScifiBook(book);
+    await booksDb.addScifiBook(book);
     console.log(`\n${book.title} has been added to the database.`);
   } else {
     console.log(`\n${book.title} will not be added to the database.`)
@@ -227,7 +232,7 @@ async function handleAdd() {
 /**
  * Handle when the user chooses to delete a book.
  */
-async function handleDelete() {
+async function handleDelete(booksDb) {
   const books = await getScifiBooks();
   const menuOptions = menuOptionsFromBooks(books);
   const cliOptions = {
@@ -236,7 +241,7 @@ async function handleDelete() {
   const { value, id } = await cliSelect(cliOptions);
 
   if (await confirm(`Are you sure you want to delete ${value}?`)) {
-    deleteScifiBook(id);
+    await booksDb.deleteScifiBook(id);
     console.log(`${value} has been deleted.`);
     return;
   }

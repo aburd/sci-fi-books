@@ -29,7 +29,7 @@
  */
 function displayBook(book, style = 'normal') {
   if (style === 'short') {
-    return `${book.title}, by ${book?.author.name}`
+    return `${book.title}, by ${book?.author?.name}`
   }
   if (style === 'normal') {
     return `Title: ${book.title}
