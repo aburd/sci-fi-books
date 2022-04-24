@@ -29,7 +29,7 @@
  */
 function displayBook(book, style = 'normal') {
   if (style === 'short') {
-    return `${book.title}, by ${book?.author.name}`
+    return `${book.title}, by ${book?.author?.name}`
   }
   if (style === 'normal') {
     return `Title: ${book.title}
@@ -37,7 +37,7 @@ Author: ${book?.author.name}`;
   }
   if (style === 'long') {
     let text = `${book.fullTitle || book.title}
-Publishers: ${book.publishers.join(', ')}
+Publishers: ${book?.publishers?.join(', ')}
 Published Date: ${book.publishDate}
 `;
     if (book.author) {
