@@ -233,7 +233,7 @@ async function handleAdd(bookDb) {
  * Handle when the user chooses to delete a book.
  */
 async function handleDelete(booksDb) {
-  const books = await getScifiBooks();
+  const books = await booksDb.getScifiBooks();
   const menuOptions = menuOptionsFromBooks(books);
   const cliOptions = {
     values: menuOptions,
