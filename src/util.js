@@ -1,4 +1,9 @@
 const readline = require("readline");
+const path = require('path');
+
+function getDbPath() {
+  return path.join(__dirname, '..', process.env.DB_PATH);
+}
 
 /**
  * Tells you if the string is a valid ISBN 10 or 13
@@ -124,5 +129,6 @@ module.exports = {
   emphasize,
   splitToLines,
   cardFromString,
+  getDbPath,
 }
 

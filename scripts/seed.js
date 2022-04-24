@@ -1,8 +1,8 @@
 const { open } = require('lmdb');
-const path = require('path');
 const { initBooksDb } = require('../src/db/books');
 const { fetchBook } = require('../src/handlers');
-const { confirm } = require('../src/util');
+const { confirm, getDbPath } = require('../src/util');
+require('dotenv').config();
 
 const seedIsbns = [
       "9781250214713",
@@ -10,9 +10,8 @@ const seedIsbns = [
       "9782290330623"
 ];
 
-const dbPath = path.join(__dirname, '..', 'scifibooks');
 const db = open({
-	path: dbPath,
+	path: getDbPath(),
 	// any options go here, we can turn on compression like this:
 	compression: true,
 });

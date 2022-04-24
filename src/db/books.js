@@ -14,8 +14,9 @@ module.exports = {
      * @return {Book[]}
      */
     getScifiBooks(offset = 0, limit = 10) {
-      const range = db.getRange({ limit, offset });
-      return [...range];
+      const values = db.getRange({ limit, offset })
+        .map(({ value }) => value);
+      return [...values];
     },
 
     /**
@@ -23,7 +24,7 @@ module.exports = {
      * @param {string} isbn
      * @return {Book || null}
      */
-    async getScifiBook(isbn) {
+    getScifiBook(isbn) {
       return db.get(isbn);
     },
 

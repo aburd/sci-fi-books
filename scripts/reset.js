@@ -1,9 +1,10 @@
-const { confirm } = require('../src/util');
+const { confirm, getDbPath } = require('../src/util');
 const { open } = require('lmdb');
 const { initBooksDb } = require('../src/db/books');
+require('dotenv').config();
 
 const db = open({
-	path: 'scifibooks',
+	path: getDbPath(),
 	// any options go here, we can turn on compression like this:
 	compression: true,
 });

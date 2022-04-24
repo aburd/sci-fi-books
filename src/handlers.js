@@ -158,7 +158,7 @@ async function handleShow(booksDb) {
   }
   const menuOptions = menuOptionsFromBooks(books);
   const { id, value } = await cliSelect({ values: menuOptions });
-  const book = getScifiBook(id);
+  const book = booksDb.getScifiBook(id);
   if (!book) {
     console.error(`${value} not found in DB!`);
     return;
@@ -171,7 +171,7 @@ async function handleShow(booksDb) {
 /**
  * Handle searching for a book, multiple methods for search.
  */
-async function handleSearch() {
+async function handleSearch(booksDb) {
   const searchOptions = {
     title: "Search by book title",
     author: "Search by author",
@@ -182,10 +182,10 @@ async function handleSearch() {
   let result;
   switch(id) {
     case "title":
-      await handleSearchByTitle();
+      result = await handleSearchByTitle();
       break;
     case "author":
-      await handleSearchByAuthor();
+      result = await handleSearchByAuthor();
       break;
     default:
       console.log('Unrecognized search option!');
